@@ -1,0 +1,4 @@
+path_to_memex: ./_data/
+bib_all: ./_bib/zotero_bibliography.bib
+bibtex_keys: ./_bib/bibtex_keys.yml
+language_keys: ./_bib/bibtex_languages.yml
