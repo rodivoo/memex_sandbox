@@ -1,0 +1,235 @@
+
+.search_input_font {
+    font-family: 'Amiri', 'Geeza Pro', 'Courier New', 'Arial', 'LateefRegular';
+    font-size: 28px;
+}
+
+.english{
+    font-family: 'Brill', 'Gentium', 'Baskerville';
+    font-size: 24px;
+    line-height: 1;
+    margin: 20px 0;
+    padding-left: 20px;
+    background-color: white;
+    margin-right: 5%;
+    /*margin-left:  5%;*/
+}
+
+.blockquote{
+    font-family: 'Brill', 'Gentium', 'Baskerville';
+    font-size: 24px;
+    line-height: 1;
+    margin: 20px 0;
+    background-color: white;
+    margin-right: 5%;
+    margin-left:  5%;
+}
+
+.ID{
+    font-family: 'Courier New';
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 1;
+    margin: 36px 0;
+    background-color: #DDD;
+    color: #b30000;
+    display: inline;
+    /*margin-right: 15%;*/
+    /*margin-left:  15%;*/
+}
+
+.bib{
+    font-family: 'Courier New';
+    font-weight: bold;
+    font-size: 12px;
+    line-height: 1;
+    margin: 36px 0;
+    background-color: "white";
+    color: "black";
+    display: inline;
+    margin-right: 10%;
+    margin-left:  10%;
+    white-space: pre;
+}
+
+.URI {
+    font-size: 22px;
+    font-weight: normal;
+    font-family: "Courier New", 'Amiri', 'Lateef', 'Geeza Pro', serif;
+    padding: 0;
+    margin: 0;
+    text-indent: 0;
+    color: #b30000;
+    text-align: center;
+}
+
+.maintext{
+    margin-top: 0%;
+    margin-right: 10px; /* Same as the width of the sidenav */
+    margin-left:  150px;
+    margin-bottom: 0%;
+    background-color: white;
+    padding-left: 0px; 
+}
+
+a {
+    text-decoration: none;
+    font-weight: bold;
+    color: #b30000;
+}
+
+p{
+    text-indent: 0px;
+    text-align: justify;
+    text-justify: inter-word;
+}
+
+li{
+  margin-top: 25px;
+  font-size: 24px;
+}
+
+/* collapsible elements*/
+
+.collapsible {
+  font-family: "Baskerville", 'Garamond', serif;
+  background-color: #777;
+  color: white;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.active, .collapsible:hover {
+  background-color: #333;
+}
+
+.collapsible:after {
+  content: '\002B';
+  color: white;
+  font-weight: bold;
+  float: right;
+  margin-left: 5px;
+}
+
+.active:after {
+  /*content: "\2212";*/
+}
+
+.content {
+  padding: 0 18px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+  background-color: #f1f1f1;
+}
+
+
+
+/* from page viewer */
+
+body {
+    width: 100%;
+    background-color: "white";
+    font-family: Baskerville, Brill;
+    margin: 0;
+    padding: 0;
+}
+
+table.navtable { width: 100%; }
+
+.navtable a, #settings_container a { color: black; text-decoration: none; }
+
+
+/*////////////// Search box end /////////////////*/
+
+/*////////////// nav bar start /////////////////*/
+/* Add a black background color to the top navigation */
+.topnav {
+    background-color: #333;
+    overflow: hidden;
+}
+
+/* Style the links inside the navigation bar */
+.topnav a {
+    float: left;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 17px;
+}
+
+/* Change the color of links on hover */
+.topnav a:hover {
+    background-color: #ddd;
+    color: black;
+}
+
+/* Add a color to the active/current link */
+.topnav a.active {
+    background-color: #4CAF50;
+    color: white;
+}
+/*/////////////// nav bar end /////////////////*/
+
+
+/*////////////// side nav bar start /////////////////*/
+/* Add a black background color to the top navigation */
+.sidenav {
+  height: 100%;
+  width: 150px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: white;
+  overflow-x: hidden;
+  padding-top: 5px;
+}
+
+.sidenav a {
+  padding-left: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 18px;
+  color: #D6DBDF;
+  /*display: block;*/
+}
+
+.sidenav a:hover {
+  color: red;
+}
+/*/////////////// side nav bar end /////////////////*/
+
+/*////////////// side nav index bar start /////////////////*/
+/* Add a black background color to the top navigation */
+.sidenavindex {
+  height: 100%;
+  width: 150px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #333;
+  overflow-x: hidden;
+  padding-top: 5px;
+}
+
+.sidenavindex a {
+  padding-left: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 18px;
+  color: #D6DBDF;
+  display: block;
+}
+
+.sidenavindex a:hover {
+  color: white;
+}
+/*/////////////// side nav bar end /////////////////*/

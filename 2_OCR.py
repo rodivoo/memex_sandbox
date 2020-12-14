@@ -4,6 +4,7 @@ import json
 import pdf2image
 import pytesseract
 import functions
+import random
 import yaml
 
 ###########################################################
@@ -11,12 +12,11 @@ import yaml
 ###########################################################
 
 settingsFile = "./settings.yml"
-settings = yaml.load(open(settingsFile))
+settings = functions.loadYmlSettings(settingsFile)
 
 bibAll = settings["bib_all"]
-pathToMemex = settings["path_to_memex"]
-
-germanLangCodes = ["de", "DE", "DEU", "Deutsch", "deutsch", "ger", "GER"]
+memexPath = settings["path_to_memex"]
+langKeys = yaml.load(open(settings["language_keys"]), Loader=yaml.FullLoader)
 
 ###########################################################
 # FUNCTIONS ###############################################
@@ -42,8 +42,6 @@ def ocrPublication(pathToMemex, citationKey, language):
     jsonFile = os.path.join(publPath, citationKey + ".json")
     saveToPath = os.path.join(publPath, "pages")
 
-    pdfFileTemp = removeCommentsFromPDF(pdfFile)
-
     if not os.path.isfile(jsonFile):
         if not os.path.exists(saveToPath):
             os.makedirs(saveToPath)
@@ -51,16 +49,16 @@ def ocrPublication(pathToMemex, citationKey, language):
         print("\t>>> OCR-ing: %s" % citationKey)
 
         textResults = {}
-        images = pdf2image.convert_from_path(pdfFileTemp)
+        images = pdf2image.convert_from_path(pdfFile)
         pageTotal = len(images)
         pageCount = 1
         for image in images:
-            image = image.convert('1')
-            finalPath = os.path.join(saveToPath, "%04d.png" % pageCount)
-            image.save(finalPath, optimize=True, quality=10)
-
             text = pytesseract.image_to_string(image, lang=language)
             textResults["%04d" % pageCount] = text
+
+            image = image.convert('1') # binarizes image, reducing its size
+            finalPath = os.path.join(saveToPath, "%04d.png" % pageCount)
+            image.save(finalPath, optimize=True, quality=10)
 
             print("\t\t%04d/%04d pages" % (pageCount, pageTotal))
             pageCount += 1
@@ -71,33 +69,49 @@ def ocrPublication(pathToMemex, citationKey, language):
     else:
         print("\t>>> %s has already been OCR-ed..." % citationKey)
 
-    os.remove(pdfFileTemp)
-    
-def processOCR(pathToMemex, bibRecDict, tesseractLang):
-    citationKey = bibRecDict["rCite"]
-    language = "eng" 
-    for key in bibRecDict:
-        if key == "language":
-            if bibRecDict["language"] in tesseractLang:
-                language = bibRecDict["language"]
-            elif bibRecDict["language"] in germanLangCodes:
-                language = "deu"
-
-    ocrPublication(pathToMemex, citationKey, language)
+def identifyLanguage(bibRecDict, fallBackLanguage):
+    if "langid" in bibRecDict:
+        try:
+            language = langKeys[bibRecDict["langid"]]
+            message = "\t>> Language has been successfuly identified: %s" % language
+        except:
+            message = "\t>> Language ID `%s` cannot be understood by Tesseract; fix it and retry\n" % bibRecDict["langid"]
+            message += "\t>> For now, trying `%s`..." % fallBackLanguage
+            language = fallBackLanguage
+    else:
+        message = "\t>> No data on the language of the publication"
+        message += "\t>> For now, trying `%s`..." % fallBackLanguage
+        language = fallBackLanguage
+    print(message)
+    return(language)
 
 ###########################################################
-# PROCESS ALL RECORDS #####################################
+# PROCESS ALL RECORDS: APPROACH 2 #########################
 ###########################################################
 
-with open("tesseract_lang.txt", "r") as f1:
-    tesseractLang = []
-    for line in f1:
-        tesseractLang.append(line.strip())
+# Why this way? Our computers are now quite powerful; they
+# often have multiple cores and we can take advantage of this;
+# if we process our data in the manner coded below --- we shuffle
+# our publications and process them in random order --- we can
+# run multiple instances fo the same script and data will
+# be produced in parallel. You can run as many instances as
+# your machine allows (you need to check how many cores
+# your machine has). Even running two scripts will cut
+# processing time roughly in half.
 
 def processAllRecords(bibData):
-    for k,v in bibData.items():
-        processOCR(pathToMemex, v, tesseractLang)
+    keys = list(bibData.keys())
+    random.shuffle(keys)
 
-bibData = functions.loadBib(bibAll)
+    for key in keys:
+        bibRecord = bibData[key]
+
+        functions.processBibRecord(memexPath, bibRecord)
+
+        language = identifyLanguage(bibRecord, "eng")
+        ocrPublication(memexPath, bibRecord["rCite"], language)
+
+
+bibData = functions.loadBib(settings["bib_all"])
 processAllRecords(bibData)
 

@@ -1,4 +1,20 @@
+# PATH TO MEMEX
 path_to_memex: ./_data/
+
+# BIBLIOGRAPHICAL FILES
 bib_all: ./_bib/zotero_bibliography.bib
 bibtex_keys: ./_bib/bibtex_keys.yml
 language_keys: ./_bib/bibtex_languages.yml
+
+# TEMPLATES AND CONTENT FILES FOR THE INTERFACE
+template_page: ./_misc/template_page.html
+template_index: ./_misc/template_index.html
+template_contents: ./_misc/template_contents.html
+content_index: ./_misc/content_index.html
+
+# GENERATED FILES AND EXTENSIONS
+memexDF_file: ./_data/memex.documentFrequencies
+tfPubl_ext: .publTF # term frequencies per entire publication
+tfPage_ext: .pageTF # term frequencies per each page
+tfIdfPubl_ext: .publTFIDF # tfIdf frequencies per entire publication
+tfIdfPage_ext: .pageTFIDF # tfIdf frequencies per each page
