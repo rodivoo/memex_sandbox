@@ -1,6 +1,7 @@
 import functions
 import os
 import json
+import re 
 
 ###########################################################
 # VARIABLES ###############################################
@@ -17,7 +18,7 @@ memexPath = settings["path_to_memex"]
 ###########################################################
 
 # generate interface for the publication
-def generatePublicationInterface(citeKey, pathToBibFile):
+def generatePublicationInterface(citeKey, pathToBibFile, cosDistance):
     print("="*80)
     print(citeKey)
 
@@ -50,15 +51,27 @@ def generatePublicationInterface(citeKey, pathToBibFile):
             pageTemp = pageTemp.replace("@CITATIONKEY@", citeKey)
 
             if k != "DETAILS":
-                mainElement = '<img src="@PAGEFILE@" width="100%" alt="">'.replace("@PAGEFILE@", "%s.png" % k)
-                pageTemp = pageTemp.replace("@MAINELEMENT@", mainElement)
-                pageTemp = pageTemp.replace("@OCREDCONTENT@", ocred[k].replace("\n", "<br>"))
+                mainElement = '<img src="{}.png" width="100%" alt="">'.format(k)
+                mainElement += '<button class="collapsible">Ocred Text</button><div class="content"><div class="bib">{}</div></div>'.format(
+                    ocred[k].replace("\n", "<br>")
+                )
+                
             else:
-                mainElement = bibForHTML.replace("\n", "<br> ")
-                mainElement = '<div class="bib">%s</div>' % mainElement
-                mainElement += '\n<img src="wordcloud.jpg" width="100%" alt="wordcloud">'
-                pageTemp = pageTemp.replace("@MAINELEMENT@", mainElement)
-                pageTemp = pageTemp.replace("@OCREDCONTENT@", "")
+                mainElement = '<h2>{0} ({1}). {2}</h2>'.format(
+                    bibDic[citeKey]["author"],
+                    bibDic[citeKey]["date"],
+                    bibDic[citeKey]["title"]
+                )
+                mainElement += '<button class="collapsible">BibTeX Bibliographical Record</button><div class="content"><div class="bib">{}</div></div>'.format(
+                    bibForHTML.replace("\n", "<br> ")
+                )
+                mainElement += '<button class="collapsible">WordCloud of Keywords (tf-idf)</button><div class="content"><img src="wordcloud.jpg" width="100%" alt="wordcloud"></div>'
+
+            mainElement += '<button class="collapsible">Similar Texts (tf-idf + cosine similarity)</button><div class="content"><table id="publications" class="mainList" width="100%"><thead><tr><th>SIM</th><th>citeKey, author, date, title</th></tr></thead><tbody>'
+            mainElement += generateSimilarList(cosDistance)
+            mainElement += '</tbody></table></div>'
+
+            pageTemp = pageTemp.replace("@MAINELEMENT@", mainElement)
 
             # @NEXTPAGEHTML@ and @PREVIOUSPAGEHTML@
             if k == "DETAILS":
@@ -81,23 +94,27 @@ def generatePublicationInterface(citeKey, pathToBibFile):
             with open(pagePath, "w", encoding="utf8") as f9:
                 f9.write(pageTemp)
 
-def generateIndexPage():
-    # load index template
-    with open(settings["template_index"], "r", encoding="utf8") as ft:
-        template = ft.read()
+def generateSimilarList(cosDic):
+    similarList = []
 
-    # load index content
-    with open(settings["content_index"], "r", encoding="utf8") as f1:
-        content = f1.read()
+    for k, v in cosDic.items():
+        filePath = os.path.join(functions.generatePublPath(memexPath, k), k + ".bib")
+        bibDic = functions.loadBib(filePath)
+        similarList.append("<tr><td>{5:.5f}</td><td><div class=\"ID\"><a href=\"../../../../{0}/pages/DETAILS.html\">[{1}]</a></div> {2} ({3}) <i>{4}</i></td></tr>".format(
+            os.path.join(k[0], k[:2], k),
+            k,
+            bibDic[k]["author"],
+            bibDic[k]["date"],
+            bibDic[k]["title"],
+            v)
+        )
+        
+    similarListSorted = sorted(similarList, reverse=False)
+    similarList = "".join(similarListSorted)
 
-    pageTemp = template
-    pageTemp = pageTemp.replace("@MAINCONTENT@", content)
+    return(similarList)
 
-    directory = os.path.join(memexPath, "index.html")
-    with open(directory, "w", encoding="utf8") as f2:
-        f2.write(pageTemp)
-
-def generateContentsPage():
+""" def generateContentsPage():
     # load contents template
     with open(settings["template_contents"], "r", encoding="utf8") as ft:
         template = ft.read()
@@ -123,7 +140,7 @@ def generateContentsPage():
 
     directory = os.path.join(memexPath, "contents.html")
     with open(directory, "w", encoding="utf8") as f2:
-        f2.write(pageTemp)
+        f2.write(pageTemp) """
 
 ###########################################################
 # PROCESS ALL RECORDS #####################################
@@ -131,9 +148,13 @@ def generateContentsPage():
 
 def processAllRecords():
     relDic = functions.dicOfRelevantFiles(memexPath, "bib")
+    # load "tf-idf_distances.dataJson"
+    distDataPath = os.path.join(memexPath, "tf-idf_distances.dataJson")
+    distData = json.load(open(distDataPath))
     for k,v in relDic.items():
-        generatePublicationInterface(k[:-1], v)
+        generatePublicationInterface(k[:-1], v, distData[k[:-1]])
 
 processAllRecords()
-generateIndexPage()
-generateContentsPage()
+#generateContentsPage()
+
+exec(open("7_IndexPage.py").read())

@@ -44,12 +44,15 @@ tr:hover {
 .searchString{
     font-family: 'Courier New';
     font-weight: bold;
-    /*font-size: 18px;*/
     line-height: 1;
     margin: 36px 0;
     /*background-color: white;*/
     color: black;
     display: inline;
+}
+
+table .searchString{
+  font-size: 18px;
 }
 
 .bib{
@@ -110,7 +113,7 @@ h1,h2,h3{
 
 /* collapsible elements*/
 
-.collapsible {
+.collapsible, .collapsible-like {
   font-family: "Baskerville", 'Garamond', serif;
   background-color: #777;
   color: white;
@@ -120,10 +123,10 @@ h1,h2,h3{
   border: none;
   text-align: left;
   outline: none;
-  font-size: 15px;
+  font-size: 20px;
 }
 
-.active, .collapsible:hover {
+.active, .collapsible:hover, .collapsible-like{
   background-color: #333;
 }
 

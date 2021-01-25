@@ -8,64 +8,53 @@
 <link rel="stylesheet" type="text/css" href="../../../../../_misc/style.css">
 <script type="text/javascript" src="../../../../../_misc/index.js"></script>
 
+<!-- Activating Data Table Filtering -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css">
+<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+  
+<script>
+    $(document).ready(function () {
+        $('#publications').DataTable({
+          "pageLength": 50,
+          "order": [[0, "desc"]]
+        });
+    });
+</script>
+
+<!--ADDITIONALFUNCTIONALITYELEMENTS-->
+
 </head>
 <body>
 
 <div class="sidenav">
-  <center><i>these numbers do not correspond to the actual page numbers</i>
+  <center>
+  <a href="../@CITATIONKEY@.pdf" style="color: black;">ORIGINAL PDF</a> <br>
+  <button onclick="getPath()">link to this page</button>
+  <br>
   <br>
   @PAGELINKS@
   <br>
-  <i>these numbers do not correspond to the actual page numbers</i></center>
+  <br>
+  <i>IMPORTANT<br>these numbers do not correspond to the actual page numbers</i></center>
 </div>
 
 <div class="maintext">
 
 <div class="topnav">
   <a class="active" href="../../../../index.html" style="float:left">MEMEX SANDBOX</a>
-  <a href="" style="float:left">@CITATIONKEY@</a>
-    <a class="active" href="@NEXTPAGEHTML@" style="float:right">NEXT</a>
-    <a class="active" href="@PREVIOUSPAGEHTML@" style="float:right">PREVIOUS</a>
+  <a href="./DETAILS.html" style="float:left">@CITATIONKEY@</a>
+  <a class="active" href="@NEXTPAGEHTML@" style="float:right">NEXT</a>
+  <a class="active" href="@PREVIOUSPAGEHTML@" style="float:right">PREVIOUS</a>
 </div>
-
-
-<!-- EL1-start: this element can be repeated as needed-->
-<button class="collapsible">BIBLIOGRAPHICAL DETAILS</button>
-<div class="content">
-  <p>
-  <center>
-  <b>@CITATIONKEY@</b> ::
-  <a href="../@CITATIONKEY@.pdf">link to original PDF</a> ::
-  <button onclick="getPath()">copy link to this page for Obsidian</button><br>
-  </center>
-  </p>
-</div>
-
-<!-- EL1-end: this element can be repeated as needed-->
 
 @MAINELEMENT@
 
-<button class="collapsible">CONNECTED TEXTS</button>
-<div class="content">
-  <p>
-  @CONNECTEDTEXTS@
-  </p>
-</div>
-
-<button class="collapsible">OCREDTEXT</button>
-<div class="content">
-  <div class="bib">
-  @OCREDCONTENT@
-  </div>
-</div>
-
-<!--INSERTADDITIONALELEMENTS-->
-
 <div class="topnav">
   <a class="active" href="../../../../index.html" style="float:left">MEMEX SANDBOX</a>
-  <a href="" style="float:left">@CITATIONKEY@</a>
-    <a class="active" href="@NEXTPAGEHTML@" style="float:right">NEXT</a>
-    <a class="active" href="@PREVIOUSPAGEHTML@" style="float:right">PREVIOUS</a>
+  <a href="./DETAILS.html" style="float:left">@CITATIONKEY@</a>
+  <a class="active" href="@NEXTPAGEHTML@" style="float:right">NEXT</a>
+  <a class="active" href="@PREVIOUSPAGEHTML@" style="float:right">PREVIOUS</a>
 </div>
 
 </div>

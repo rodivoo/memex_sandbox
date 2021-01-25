@@ -71,11 +71,11 @@ def filterDic(tableDic, limit):
     return(newDic)
 
 tfidfTableDic = filterDic(tfidfTableDic, 0.05)
-directory = os.path.join(memexPath, "tf-idf_terms.txt")
+directory = os.path.join(memexPath, "tf-idf_terms.dataJson")
 with open(directory, 'w', encoding='utf8') as f1:
      json.dump(tfidfTableDic, f1, sort_keys=True, indent=4, ensure_ascii=False)
 
 cosineTableDic = filterDic(cosineTableDic, 0.25)
-directory = os.path.join(memexPath, "tf-idf_distances.txt")
+directory = os.path.join(memexPath, "tf-idf_distances.dataJson")
 with open(directory, 'w', encoding='utf8') as f2:
      json.dump(cosineTableDic, f2, sort_keys=True, indent=4, ensure_ascii=False)
