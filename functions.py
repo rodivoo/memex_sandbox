@@ -1,5 +1,6 @@
-import os, shutil
-import re
+import os, shutil, json
+import re, sys
+from datetime import datetime
 
 #############################
 # STORING FUNCTIONS #########
@@ -102,18 +103,40 @@ def dicOfRelevantFiles(pathToMemex, extension):
                 dic[key] = value
     return(dic)
     
-def generatePageLinks(pNumList):
+def generatePageLinks(pNumList, bibPagesList):
     listMod = ["DETAILS"]
     listMod.extend(pNumList)
 
+    titePage = "TITLE"
+
     toc = []
     for l in listMod:
-        toc.append('<a href="%s.html">%s</a>' % (l, l))
+        if l != "DETAILS" and bibPagesList != "no":
+            if len(pNumList) > (bibPagesList[1] - bibPagesList[0] + 1):
+                if l == "0001":
+                    page = titePage
+                else:
+                    page = int(l) + bibPagesList[0] - 2
+            else:
+                page = int(l) + bibPagesList[0] - 1
+        else:
+            page = l
+        toc.append('<a href="%s.html">%s</a>' % (l, page))
     toc = " ".join(toc)
 
     pageDic = {}
     for l in listMod:
-        pageDic[l] = toc.replace('>%s<' % l, ' style="color: red;">%s<' % l)
+        if l != "DETAILS" and bibPagesList != "no":
+            if len(pNumList) > (bibPagesList[1] - bibPagesList[0] + 1):
+                if l == "0001":
+                    page = titePage
+                else:
+                    page = int(l) + bibPagesList[0] - 2
+            else:
+                page = int(l) + bibPagesList[0] - 1
+        else:
+            page = l
+        pageDic[l] = toc.replace('>%s<' % page, ' style="color: red;">%s<' % page)
 
     return(pageDic)
 
@@ -122,3 +145,88 @@ def prettifyBib(bibText):
     bibText = re.sub(r"\n\s+file = [^\n]+", "", bibText)
     bibText = re.sub(r"\n\s+abstract = [^\n]+", "", bibText)
     return(bibText)
+
+# creates a list of paths to files of a relevant type
+def listOfRelevantFiles(pathToMemex, extension):
+    listOfPaths = []
+    for subdir, dirs, files in os.walk(pathToMemex):
+        for file in files:
+            # process publication tf data
+            if file.endswith(extension):
+                path = os.path.join(subdir, file)
+                listOfPaths.append(listOfPaths)
+    return(listOfPaths)
+
+def memexStatusUpdates(pathToMemex, fileType):
+    # collect stats
+    NumberOfPublications = len(listOfRelevantFiles(pathToMemex, ".pdf")) # PDF is the main measuring stick
+    NumberOfCountedItems = len(listOfRelevantFiles(pathToMemex, fileType))
+
+    currentTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    # check if dictionary exists
+    dicFile = os.path.join(pathToMemex, "memex.status")
+    if os.path.isfile(dicFile):
+        dic = json.load(open(dicFile))
+    else:
+        dic = {}
+
+    dic[fileType] = {}
+    dic[fileType]["files"] = NumberOfCountedItems
+    dic[fileType]["pdfs"] = NumberOfPublications
+    dic[fileType]["time"] = currentTime
+
+    # save dic
+    with open(dicFile, 'w', encoding='utf8') as f9:
+        json.dump(dic, f9, sort_keys=True, indent=4, ensure_ascii=False)
+
+    print("="*40)
+    print("Memex Stats have been updated for: %s" % fileType)
+    print("="*40)
+
+# the function will quickly remove all files with a certain
+# extension --- useful when messing around and need to delete
+# lots of temporary files
+
+def removeFilesOfType(pathToMemex, fileExtension, silent):
+    if fileExtension in [".pdf", ".bib"]:
+        sys.exit("files with extension %s must not be deleted in batch!!! Exiting..." % fileExtension)
+    else:
+        for subdir, dirs, files in os.walk(pathToMemex):
+            for file in files:
+                # process publication tf data
+                if file.endswith(fileExtension):
+                    pathToFile = os.path.join(subdir, file)
+                    if silent != "silent":
+                        print("\tDeleting: %s" % pathToFile)
+                    os.remove(pathToFile)
+
+###########################################################
+# KEYWORD ANALYSIS FUNCTIONS ##############################
+###########################################################
+
+def loadMultiLingualStopWords(listOfLanguageCodes):
+    print(">> Loading stopwords...")
+    stopwords = []
+    pathToFiles = stopwordsPath
+    codes = json.load(open(os.path.join(pathToFiles, "languages.json")))
+
+    for l in listOfLanguageCodes:
+        with open(os.path.join(pathToFiles, codes[l]+".txt"), "r", encoding="utf8") as f1:
+            lang = f1.read().strip().split("\n")
+            stopwords.extend(lang)
+
+    stopwords = list(set(stopwords))
+    print("\tStopwords for: ", listOfLanguageCodes)
+    print("\tNumber of stopwords: %d" % len(stopwords))
+    #print(stopwords)
+    return(stopwords)
+
+###########################################################
+# VARIABLES ###############################################
+###########################################################
+
+settingsFile = "./settings.yml"
+settings = loadYmlSettings(settingsFile)
+
+stopwordsPath = settings["stopwords"]
